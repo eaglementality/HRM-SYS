@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Image from "next/image";
-import schoolLogo from "../public/AbS-removebg-preview.png";
+import schoolLogo from "../app/img/AbS-removebg-preview.png";
 import { Dash_Navigation } from "./components/Dash_navigation";
 import { Header } from "./components/header";
 const inter = Inter({ subsets: ["latin"] });

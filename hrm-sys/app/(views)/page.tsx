@@ -1,5 +1,5 @@
 import Image from "next/image";
-import schoolLogo from "../../public/AbS-removebg-preview.png";
+import schoolLogo from "../img/AbS-removebg-preview.png";
 export default async function Home() {
   return (
     <main className="flex flex-col justify-center items-center py-10">
