@@ -1,4 +1,4 @@
-import Table_template from "@/app/template/table";
+import Table_template from "@/app/components/table";
 
 export default async function AdminView() {
   return (
