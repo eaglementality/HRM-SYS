@@ -1,4 +1,5 @@
 import Table_template from "@/app/components/table";
+import { Select } from "antd";
 
 export default async function AdminView() {
   return (
@@ -14,8 +15,17 @@ export default async function AdminView() {
           <p className="text-center text-4xl">{`60`}</p>
         </div>
       </div>
-      <section className="px-5 pt-28 bg-pink-200">
-        <Table_template/>
+      <section className="px-5 pt-14">
+        <Select
+          className="mb-5 h-[50px] w-[180px]"
+          placeholder="select employee type"
+          style={{ flex: 1 }}
+          options={[
+            { value: "teaching staff", label: "teaching staff" },
+            { value: "Non-teaching staff", label: "Non-teaching staff" },
+          ]}
+        />
+        <Table_template />
       </section>
     </main>
   );
