@@ -1,80 +1,71 @@
-'use client';
-import React, { useRef, useState } from 'react';
-import { SearchOutlined } from '@ant-design/icons';
-import type { InputRef, TableColumnsType, TableColumnType } from 'antd';
-import { Button, Input, Space, Table } from 'antd';
-import type { FilterDropdownProps } from 'antd/es/table/interface';
-import Highlighter from 'react-highlight-words';
+"use client";
+import React, { useRef, useState } from "react";
+import { SearchOutlined } from "@ant-design/icons";
+import type { InputRef, TableColumnsType, TableColumnType } from "antd";
+import { Button, Input, Space, Table, Tag } from "antd";
+import type { FilterDropdownProps } from "antd/es/table/interface";
+import Highlighter from "react-highlight-words";
 
 interface DataType {
   key: string;
   name: string;
-  age: number;
-  address: string;
+  tag: string;
 }
 
 type DataIndex = keyof DataType;
 
 const data: DataType[] = [
   {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
+    key: "1",
+    name: "John Brown",
+    tag: "Teaching Staff",
   },
   {
-    key: '2',
-    name: 'Joe Black',
-    age: 42,
-    address: 'London No. 1 Lake Park',
+    key: "2",
+    name: "Joe Black",
+    tag: "Non-Teaching Staff",
   },
   {
-    key: '3',
-    name: 'Jim Green',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
+    key: "3",
+    name: "Jim Green",
+    tag: "Teaching Staff",
   },
   {
-    key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
+    key: "4",
+    name: "Jim Red",
+    tag: "Teaching Staff",
   },
   {
-    key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
+    key: "4",
+    name: "Jim Red",
+    tag: "Teaching Staff",
   },
   {
-    key: '5',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
+    key: "5",
+    name: "Jim Red",
+    tag: "Non-Teaching Staff",
   },
   {
-    key: '6',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
+    key: "6",
+    name: "Jim Red",
+    tag: "Non-Teaching Staff",
   },
   {
-    key: '7',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
+    key: "7",
+    name: "Jim Red",
+    tag: "Non-Teaching Staff",
   },
 ];
 
 const Table_template: React.FC = () => {
-  const [searchText, setSearchText] = useState('');
-  const [searchedColumn, setSearchedColumn] = useState('');
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
 
   const handleSearch = (
     selectedKeys: string[],
-    confirm: FilterDropdownProps['confirm'],
-    dataIndex: DataIndex,
+    confirm: FilterDropdownProps["confirm"],
+    dataIndex: DataIndex
   ) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -83,24 +74,38 @@ const Table_template: React.FC = () => {
 
   const handleReset = (clearFilters: () => void) => {
     clearFilters();
-    setSearchText('');
+    setSearchText("");
   };
 
-  const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<DataType> => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+  const getColumnSearchProps = (
+    dataIndex: DataIndex
+  ): TableColumnType<DataType> => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+      close,
+    }) => (
       <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
         <Input
           ref={searchInput}
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-          style={{ marginBottom: 8, display: 'block' }}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() =>
+            handleSearch(selectedKeys as string[], confirm, dataIndex)
+          }
+          style={{ marginBottom: 8, display: "block" }}
         />
         <Space>
           <Button
             type="primary"
-            onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+            onClick={() =>
+              handleSearch(selectedKeys as string[], confirm, dataIndex)
+            }
             icon={<SearchOutlined />}
             size="small"
             style={{ width: 90 }}
@@ -138,7 +143,7 @@ const Table_template: React.FC = () => {
       </div>
     ),
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
+      <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
     ),
     onFilter: (value, record) =>
       record[dataIndex]
@@ -153,10 +158,10 @@ const Table_template: React.FC = () => {
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
           searchWords={[searchText]}
           autoEscape
-          textToHighlight={text ? text.toString() : ''}
+          textToHighlight={text ? text.toString() : ""}
         />
       ) : (
         text
@@ -165,30 +170,28 @@ const Table_template: React.FC = () => {
 
   const columns: TableColumnsType<DataType> = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      width: '30%',
-      ...getColumnSearchProps('name'),
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      width: "30%",
+      ...getColumnSearchProps("name"),
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      width: '20%',
-      ...getColumnSearchProps('age'),
-    },
-    {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-      ...getColumnSearchProps('address'),
-      sorter: (a, b) => a.address.length - b.address.length,
-      sortDirections: ['descend', 'ascend'],
+      title: "Tags",
+      key: "tags",
+      dataIndex: "tags",
+      render: ( tags ) => (
+        <Tag className='text-' color={tags === "Non-Teaching Staff" ?'red' : "green" }>
+          {tags}
+        </Tag>
+      ),
     },
   ];
 
-  return <Table className='h-[80%]' columns={columns} dataSource={data} scroll={{ x: 0, y: 300 }} />;
+  return (
+    <Table columns={columns} dataSource={data} scroll={{ x: 0, y: 450 }} />
+  );
 };
 
 export default Table_template;
+// BC 674-14
