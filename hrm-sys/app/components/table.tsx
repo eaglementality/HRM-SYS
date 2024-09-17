@@ -61,6 +61,24 @@ const data: DataType[] = [
   {
     key: "8",
     name: "Jim Red",
+    tag: "Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
+  },
+  {
+    key: "9",
+    name: "Jim Red",
+    tag: "Non-Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
+  },
+  {
+    key: "10",
+    name: "Jim Red",
+    tag: "Non-Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
+  },
+  {
+    key: "11",
+    name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
