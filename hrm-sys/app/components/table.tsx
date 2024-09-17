@@ -36,14 +36,9 @@ const data: DataType[] = [
     tag: "Teaching Staff",
   },
   {
-    key: "4",
-    name: "Jim Red",
-    tag: "Teaching Staff",
-  },
-  {
     key: "5",
     name: "Jim Red",
-    tag: "Non-Teaching Staff",
+    tag: "Teaching Staff",
   },
   {
     key: "6",
@@ -52,6 +47,11 @@ const data: DataType[] = [
   },
   {
     key: "7",
+    name: "Jim Red",
+    tag: "Non-Teaching Staff",
+  },
+  {
+    key: "8",
     name: "Jim Red",
     tag: "Non-Teaching Staff",
   },
@@ -180,10 +180,15 @@ const Table_template: React.FC = () => {
       title: "Tags",
       key: "tags",
       dataIndex: "tags",
-      render: ( tags ) => (
-        <Tag className='text-' color={tags === "Non-Teaching Staff" ?'red' : "green" }>
-          {tags}
-        </Tag>
+      render: (_, { tag }) => (
+        <>
+          <Tag
+            className="text-md"
+            color={tag === "Non-Teaching Staff" ? "red" : "green"}
+          >
+            {tag}
+          </Tag>
+        </>
       ),
     },
   ];
