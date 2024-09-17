@@ -225,8 +225,9 @@ const Table_template: React.FC = () => {
       render: (_, { actions }) => (
         <>
           <div className="text-md space-x-8">
-            {actions.map((action) => (
+            {actions.map((action, id) => (
               <span
+                key={id}
                 className={`cursor-pointer ${
                   action == "Delete"
                     ? "font-bold text-red-600"
