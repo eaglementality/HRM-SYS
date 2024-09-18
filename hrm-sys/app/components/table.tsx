@@ -10,6 +10,7 @@ interface DataType {
   key: string;
   name: string;
   tag: string;
+  actions: string[];
 }
 
 type DataIndex = keyof DataType;
@@ -19,41 +20,67 @@ const data: DataType[] = [
     key: "1",
     name: "John Brown",
     tag: "Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
   },
   {
     key: "2",
     name: "Joe Black",
     tag: "Non-Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
   },
   {
     key: "3",
     name: "Jim Green",
     tag: "Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
   },
   {
     key: "4",
     name: "Jim Red",
     tag: "Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
   },
   {
     key: "5",
     name: "Jim Red",
     tag: "Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
   },
   {
     key: "6",
     name: "Jim Red",
     tag: "Non-Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
   },
   {
     key: "7",
     name: "Jim Red",
     tag: "Non-Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
   },
   {
     key: "8",
     name: "Jim Red",
+    tag: "Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
+  },
+  {
+    key: "9",
+    name: "Jim Red",
     tag: "Non-Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
+  },
+  {
+    key: "10",
+    name: "Jim Red",
+    tag: "Non-Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
+  },
+  {
+    key: "11",
+    name: "Jim Red",
+    tag: "Non-Teaching Staff",
+    actions: ["Delete", "Edit", "View"],
   },
 ];
 
@@ -191,8 +218,33 @@ const Table_template: React.FC = () => {
         </>
       ),
     },
+    {
+      title: "Actions",
+      key: "actions",
+      dataIndex: "actions",
+      render: (_, { actions }) => (
+        <>
+          <div className="text-md space-x-8">
+            {actions.map((action, id) => (
+              <span
+                key={id}
+                className={`cursor-pointer ${
+                  action == "Delete"
+                    ? "font-bold text-red-600"
+                    : action == "Edit"
+                    ? "font-bold text-blue-600"
+                    : "font-bold text-green-600"
+                }`}
+              >
+                {action}
+              </span>
+            ))}
+          </div>
+        </>
+      ),
+    },
   ];
-
+  // ['Delete','Edit', 'view']
   return (
     <Table columns={columns} dataSource={data} scroll={{ x: 0, y: 450 }} />
   );
