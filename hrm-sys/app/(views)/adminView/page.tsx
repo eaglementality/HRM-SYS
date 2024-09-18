@@ -1,13 +1,26 @@
 "use client";
 import { AddStaffForm } from "@/app/components/addStaffForm";
+import { GenericMessageModal } from "@/app/components/GenericMessageModal";
 import Table_template from "@/app/components/table";
 import { Button, Modal, Select } from "antd";
 import { useState } from "react";
 
 export default function AdminView() {
   const [openAddStaffForm, setOpenAddStaffForm] = useState<boolean>(false);
+  const [selectedRecord, setSelectedRecord] = useState<{
+    name: string;
+    tag: string;
+  }>({
+    name: "",
+    tag: "",
+  });
+  const [switchContent, setSwitchContent]=useState({
+    viewStaff:false,
+    editStaff:false,
+  })
   return (
     <>
+      <GenericMessageModal />
       <Modal
         centered
         open={openAddStaffForm}
@@ -16,15 +29,15 @@ export default function AdminView() {
         onClose={() => {
           setOpenAddStaffForm(false);
         }}
-        closeIcon
+        maskClosable={true}
         destroyOnClose={true}
       >
-        <main>
-          <AddStaffForm
-            openAddStaffForm={openAddStaffForm}
-            setOpenAddStaffForm={setOpenAddStaffForm}
-          />
-        </main>
+        <AddStaffForm
+          openAddStaffForm={openAddStaffForm}
+          setOpenAddStaffForm={setOpenAddStaffForm}
+          switchContent={switchContent}
+          selectedRecord={selectedRecord}
+        />
       </Modal>
       <main className="flex flex-col justify-center p-8">
         <h1 className="text-xl font-bold">{`Employees`}</h1>
@@ -51,13 +64,21 @@ export default function AdminView() {
             <Button
               onClick={() => {
                 setOpenAddStaffForm(true);
+                setSwitchContent((prev)=>({...prev, editStaff:false}))
               }}
               className="h-[50px] w-52 bg-black text-white"
             >
               Add staff
             </Button>
           </div>
-          <Table_template />
+          <Table_template
+            openAddStaffForm={openAddStaffForm}
+            setOpenAddStaffForm={setOpenAddStaffForm}
+            switchContent={switchContent}
+            setSwitchContent={setSwitchContent}
+            selectedRecord={selectedRecord}
+            setSelectedRecord={setSelectedRecord}
+          />
         </section>
       </main>
     </>

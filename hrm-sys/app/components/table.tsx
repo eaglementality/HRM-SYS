@@ -2,17 +2,36 @@
 import React, { useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
-import { Button, Input, Space, Table, Tag } from "antd";
+import { Button, Input, Modal, Space, Table, Tag } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
+import { GenericMessageModal } from "./GenericMessageModal";
 
+interface Props {
+  selectedRecord?: { name: string; tag: string };
+  setSelectedRecord?: (e: any) => void;
+  setSwitchContent?: (e: any) => void;
+  switchContent?: { viewStaff: boolean; editStaff: boolean };
+  openAddStaffForm: boolean;
+  setOpenAddStaffForm: (e: boolean) => void;
+}
 interface DataType {
   key: string;
   name: string;
   tag: string;
   actions: string[];
 }
-
+interface messageModalType {
+  icon: "Warning" | "Success" | "Confirm";
+  title: "Warning" | "Success" | "Confirm";
+  message: string;
+  okText: string;
+  cancelText: string;
+  okHandler: () => void;
+  cancelHandler: () => void;
+  open: boolean;
+  disableCancel: boolean;
+}
 type DataIndex = keyof DataType;
 
 const data: DataType[] = [
@@ -84,11 +103,28 @@ const data: DataType[] = [
   },
 ];
 
-const Table_template: React.FC = () => {
+const Table_template = ({
+  selectedRecord,
+  setSelectedRecord,
+  setSwitchContent,
+  switchContent,
+  openAddStaffForm,
+  setOpenAddStaffForm,
+}: Props) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
-
+  const [messageModalState, setMessageModalState] = useState<messageModalType>({
+    icon: "Warning",
+    title: "Warning",
+    message: "",
+    okText: "",
+    cancelText: "",
+    okHandler: () => {},
+    cancelHandler: () => {},
+    open: false,
+    disableCancel: false,
+  });
   const handleSearch = (
     selectedKeys: string[],
     confirm: FilterDropdownProps["confirm"],
@@ -104,6 +140,66 @@ const Table_template: React.FC = () => {
     setSearchText("");
   };
 
+  const handleDelete = () => {
+    setMessageModalState((prev) => ({
+      ...prev,
+      icon: "Confirm",
+      title: "Confirm",
+      message: "Are you sure you want to delete the record ?",
+      okText: "Yes delete",
+      cancelText: "No",
+      open: true,
+      disableCancel: false,
+      okHandler: () => {
+        setMessageModalState((prev) => ({ ...prev, open: false }));
+        setMessageModalState((prev) => ({
+          ...prev,
+          icon: "Success",
+          title: "Success",
+          message: "Record deleted successfully",
+          okText: "Ok",
+          open: true,
+          disableCancel: true,
+          okHandler: () => {
+            setMessageModalState((prev) => ({ ...prev, open: false }));
+          },
+        }));
+      },
+      cancelHandler: () => {
+        setMessageModalState((prev) => ({ ...prev, open: false }));
+      },
+    }));
+  };
+  const handleEdit = (tag: string, name: string) => {
+    setSelectedRecord &&
+      setSelectedRecord((prev: typeof selectedRecord) => ({
+        ...prev,
+        name: name,
+        tag: tag,
+      }));
+    setOpenAddStaffForm(!openAddStaffForm);
+    setSwitchContent &&
+      setSwitchContent((prev: typeof switchContent) => ({
+        ...prev,
+        editStaff: true,
+        viewStaff:false
+      }));
+  };
+  const handleView = (tag: string, name: string) => {
+    setOpenAddStaffForm(!openAddStaffForm);
+    setSelectedRecord &&
+      setSelectedRecord((prev: typeof selectedRecord) => ({
+        ...prev,
+        name: name,
+        tag: tag,
+      }));
+    setSwitchContent &&
+      setSwitchContent((prev: typeof switchContent) => ({
+        ...prev,
+        editStaff: false,
+        viewStaff:true
+      }));
+  };
   const getColumnSearchProps = (
     dataIndex: DataIndex
   ): TableColumnType<DataType> => ({
@@ -222,12 +318,19 @@ const Table_template: React.FC = () => {
       title: "Actions",
       key: "actions",
       dataIndex: "actions",
-      render: (_, { actions }) => (
+      render: (_, { actions, tag, name }) => (
         <>
           <div className="text-md space-x-8">
             {actions.map((action, id) => (
               <span
                 key={id}
+                onClick={() => {
+                  id === 0
+                    ? handleDelete()
+                    : id === 1
+                    ? handleEdit(tag, name)
+                    : handleView(tag, name);
+                }}
                 className={`cursor-pointer ${
                   action == "Delete"
                     ? "font-bold text-red-600"
@@ -244,11 +347,22 @@ const Table_template: React.FC = () => {
       ),
     },
   ];
-  // ['Delete','Edit', 'view']
   return (
-    <Table columns={columns} dataSource={data} scroll={{ x: 0, y: 450 }} />
+    <>
+      <GenericMessageModal
+        icon={messageModalState.icon}
+        title={messageModalState.title}
+        message={messageModalState.message}
+        open={messageModalState.open}
+        disableCancel={messageModalState.disableCancel}
+        okText={messageModalState.okText}
+        cancelText={messageModalState.cancelText}
+        okHandler={messageModalState.okHandler}
+        cancelHandler={messageModalState.cancelHandler}
+      />
+      <Table columns={columns} dataSource={data} scroll={{ x: 0, y: 450 }} />
+    </>
   );
 };
 
 export default Table_template;
-// BC 674-14
