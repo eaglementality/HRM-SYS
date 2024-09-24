@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
 import { Button, Input, Modal, Space, Table, Tag } from "antd";
@@ -102,6 +102,15 @@ const data: DataType[] = [
     actions: ["Delete", "Edit", "View"],
   },
 ];
+
+async function GetStaffData() {
+  await fetch(`${window.location.origin}/api/getStaff`)
+    .then((res) => res.json())
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
 
 const Table_template = ({
   selectedRecord,
@@ -347,6 +356,8 @@ const Table_template = ({
       ),
     },
   ];
+const staffData = GetStaffData();
+console.log(staffData);
   return (
     <>
       <GenericMessageModal
