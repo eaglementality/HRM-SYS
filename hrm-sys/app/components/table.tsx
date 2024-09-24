@@ -17,7 +17,7 @@ interface Props {
 }
 interface DataType {
   key: string;
-  name: string;
+  Name: string;
   tag: string;
   actions: string[];
 }
@@ -37,80 +37,71 @@ type DataIndex = keyof DataType;
 const data: DataType[] = [
   {
     key: "1",
-    name: "John Brown",
+    Name: "John Brown",
     tag: "Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "2",
-    name: "Joe Black",
+    Name: "Joe Black",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "3",
-    name: "Jim Green",
+    Name: "Jim Green",
     tag: "Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "4",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "5",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "6",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "7",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "8",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "9",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "10",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "11",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
 ];
-
-async function GetStaffData() {
-  await fetch(`${window.location.origin}/api/getStaff`)
-    .then((res) => res.json())
-    .catch((err) => {
-      console.log(err);
-    });
-}
-
 
 const Table_template = ({
   selectedRecord,
@@ -191,7 +182,7 @@ const Table_template = ({
       setSwitchContent((prev: typeof switchContent) => ({
         ...prev,
         editStaff: true,
-        viewStaff:false
+        viewStaff: false,
       }));
   };
   const handleView = (tag: string, name: string) => {
@@ -206,7 +197,7 @@ const Table_template = ({
       setSwitchContent((prev: typeof switchContent) => ({
         ...prev,
         editStaff: false,
-        viewStaff:true
+        viewStaff: true,
       }));
   };
   const getColumnSearchProps = (
@@ -303,10 +294,10 @@ const Table_template = ({
   const columns: TableColumnsType<DataType> = [
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "Name",
+      key: "Name",
       width: "30%",
-      ...getColumnSearchProps("name"),
+      ...getColumnSearchProps("Name"),
     },
     {
       title: "Tags",
@@ -316,7 +307,7 @@ const Table_template = ({
         <>
           <Tag
             className="text-md"
-            color={tag === "Non-Teaching Staff" ? "red" : "green"}
+            color={tag === "Non Teaching Staff" ? "red" : "green"}
           >
             {tag}
           </Tag>
@@ -327,37 +318,50 @@ const Table_template = ({
       title: "Actions",
       key: "actions",
       dataIndex: "actions",
-      render: (_, { actions, tag, name }) => (
+      render: (_, { actions, tag, Name }) => (
         <>
           <div className="text-md space-x-8">
-            {actions.map((action, id) => (
-              <span
-                key={id}
-                onClick={() => {
-                  id === 0
-                    ? handleDelete()
-                    : id === 1
-                    ? handleEdit(tag, name)
-                    : handleView(tag, name);
-                }}
-                className={`cursor-pointer ${
-                  action == "Delete"
-                    ? "font-bold text-red-600"
-                    : action == "Edit"
-                    ? "font-bold text-blue-600"
-                    : "font-bold text-green-600"
-                }`}
-              >
-                {action}
-              </span>
-            ))}
+            <span
+              onClick={() => {
+                handleDelete();
+              }}
+              className="cursor-pointer font-bold text-red-600"
+            >
+              {`Delete`}
+            </span>
+            <span
+              onClick={() => {
+                handleEdit(tag, Name);
+              }}
+              className="cursor-pointer font-bold text-blue-600"
+            >
+              {`Edit`}
+            </span>
+            <span
+              onClick={() => {
+                handleView(tag, Name);
+              }}
+              className="cursor-pointer font-bold text-green-600"
+            >
+              {`View`}
+            </span>
           </div>
         </>
       ),
     },
   ];
-const staffData = GetStaffData();
-console.log(staffData);
+  const [getStaff, setGetStaff] = useState<any>();
+  useEffect(() => {
+    async function GetStaffData() {
+      const res = await fetch("/api/getStaff");
+      const data = res?.json();
+      data.then((data) => {
+        setGetStaff(data);
+      });
+    }
+    GetStaffData();
+  }, []);
+
   return (
     <>
       <GenericMessageModal
@@ -371,7 +375,11 @@ console.log(staffData);
         okHandler={messageModalState.okHandler}
         cancelHandler={messageModalState.cancelHandler}
       />
-      <Table columns={columns} dataSource={data} scroll={{ x: 0, y: 450 }} />
+      <Table
+        columns={columns}
+        dataSource={getStaff}
+        scroll={{ x: 0, y: 450 }}
+      />
     </>
   );
 };
