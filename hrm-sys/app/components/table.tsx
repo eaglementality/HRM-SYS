@@ -1,94 +1,130 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
-import { Button, Input, Space, Table, Tag } from "antd";
+import { Button, Input, Modal, Space, Table, Tag } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
+import { GenericMessageModal } from "./GenericMessageModal";
 
+interface Props {
+  selectedRecord?: { name: string; tag: string };
+  setSelectedRecord?: (e: any) => void;
+  setSwitchContent?: (e: any) => void;
+  switchContent?: { viewStaff: boolean; editStaff: boolean };
+  openAddStaffForm: boolean;
+  setOpenAddStaffForm: (e: boolean) => void;
+}
 interface DataType {
   key: string;
-  name: string;
+  Name: string;
   tag: string;
   actions: string[];
 }
-
+interface messageModalType {
+  icon: "Warning" | "Success" | "Confirm";
+  title: "Warning" | "Success" | "Confirm";
+  message: string;
+  okText: string;
+  cancelText: string;
+  okHandler: () => void;
+  cancelHandler: () => void;
+  open: boolean;
+  disableCancel: boolean;
+}
 type DataIndex = keyof DataType;
 
 const data: DataType[] = [
   {
     key: "1",
-    name: "John Brown",
+    Name: "John Brown",
     tag: "Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "2",
-    name: "Joe Black",
+    Name: "Joe Black",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "3",
-    name: "Jim Green",
+    Name: "Jim Green",
     tag: "Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "4",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "5",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "6",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "7",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "8",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "9",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "10",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
   {
     key: "11",
-    name: "Jim Red",
+    Name: "Jim Red",
     tag: "Non-Teaching Staff",
     actions: ["Delete", "Edit", "View"],
   },
 ];
 
-const Table_template: React.FC = () => {
+const Table_template = ({
+  selectedRecord,
+  setSelectedRecord,
+  setSwitchContent,
+  switchContent,
+  openAddStaffForm,
+  setOpenAddStaffForm,
+}: Props) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
-
+  const [messageModalState, setMessageModalState] = useState<messageModalType>({
+    icon: "Warning",
+    title: "Warning",
+    message: "",
+    okText: "",
+    cancelText: "",
+    okHandler: () => {},
+    cancelHandler: () => {},
+    open: false,
+    disableCancel: false,
+  });
   const handleSearch = (
     selectedKeys: string[],
     confirm: FilterDropdownProps["confirm"],
@@ -104,6 +140,66 @@ const Table_template: React.FC = () => {
     setSearchText("");
   };
 
+  const handleDelete = () => {
+    setMessageModalState((prev) => ({
+      ...prev,
+      icon: "Confirm",
+      title: "Confirm",
+      message: "Are you sure you want to delete the record ?",
+      okText: "Yes delete",
+      cancelText: "No",
+      open: true,
+      disableCancel: false,
+      okHandler: () => {
+        setMessageModalState((prev) => ({ ...prev, open: false }));
+        setMessageModalState((prev) => ({
+          ...prev,
+          icon: "Success",
+          title: "Success",
+          message: "Record deleted successfully",
+          okText: "Ok",
+          open: true,
+          disableCancel: true,
+          okHandler: () => {
+            setMessageModalState((prev) => ({ ...prev, open: false }));
+          },
+        }));
+      },
+      cancelHandler: () => {
+        setMessageModalState((prev) => ({ ...prev, open: false }));
+      },
+    }));
+  };
+  const handleEdit = (tag: string, name: string) => {
+    setSelectedRecord &&
+      setSelectedRecord((prev: typeof selectedRecord) => ({
+        ...prev,
+        name: name,
+        tag: tag,
+      }));
+    setOpenAddStaffForm(!openAddStaffForm);
+    setSwitchContent &&
+      setSwitchContent((prev: typeof switchContent) => ({
+        ...prev,
+        editStaff: true,
+        viewStaff: false,
+      }));
+  };
+  const handleView = (tag: string, name: string) => {
+    setOpenAddStaffForm(!openAddStaffForm);
+    setSelectedRecord &&
+      setSelectedRecord((prev: typeof selectedRecord) => ({
+        ...prev,
+        name: name,
+        tag: tag,
+      }));
+    setSwitchContent &&
+      setSwitchContent((prev: typeof switchContent) => ({
+        ...prev,
+        editStaff: false,
+        viewStaff: true,
+      }));
+  };
   const getColumnSearchProps = (
     dataIndex: DataIndex
   ): TableColumnType<DataType> => ({
@@ -198,10 +294,10 @@ const Table_template: React.FC = () => {
   const columns: TableColumnsType<DataType> = [
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "Name",
+      key: "Name",
       width: "30%",
-      ...getColumnSearchProps("name"),
+      ...getColumnSearchProps("Name"),
     },
     {
       title: "Tags",
@@ -211,7 +307,7 @@ const Table_template: React.FC = () => {
         <>
           <Tag
             className="text-md"
-            color={tag === "Non-Teaching Staff" ? "red" : "green"}
+            color={tag === "Non Teaching Staff" ? "red" : "green"}
           >
             {tag}
           </Tag>
@@ -222,33 +318,70 @@ const Table_template: React.FC = () => {
       title: "Actions",
       key: "actions",
       dataIndex: "actions",
-      render: (_, { actions }) => (
+      render: (_, { actions, tag, Name }) => (
         <>
           <div className="text-md space-x-8">
-            {actions.map((action, id) => (
-              <span
-                key={id}
-                className={`cursor-pointer ${
-                  action == "Delete"
-                    ? "font-bold text-red-600"
-                    : action == "Edit"
-                    ? "font-bold text-blue-600"
-                    : "font-bold text-green-600"
-                }`}
-              >
-                {action}
-              </span>
-            ))}
+            <span
+              onClick={() => {
+                handleDelete();
+              }}
+              className="cursor-pointer font-bold text-red-600"
+            >
+              {`Delete`}
+            </span>
+            <span
+              onClick={() => {
+                handleEdit(tag, Name);
+              }}
+              className="cursor-pointer font-bold text-blue-600"
+            >
+              {`Edit`}
+            </span>
+            <span
+              onClick={() => {
+                handleView(tag, Name);
+              }}
+              className="cursor-pointer font-bold text-green-600"
+            >
+              {`View`}
+            </span>
           </div>
         </>
       ),
     },
   ];
-  // ['Delete','Edit', 'view']
+  const [getStaff, setGetStaff] = useState<any>();
+  useEffect(() => {
+    async function GetStaffData() {
+      const res = await fetch("/api/getStaff");
+      const data = res?.json();
+      data.then((data) => {
+        setGetStaff(data);
+      });
+    }
+    GetStaffData();
+  }, []);
+
   return (
-    <Table columns={columns} dataSource={data} scroll={{ x: 0, y: 450 }} />
+    <>
+      <GenericMessageModal
+        icon={messageModalState.icon}
+        title={messageModalState.title}
+        message={messageModalState.message}
+        open={messageModalState.open}
+        disableCancel={messageModalState.disableCancel}
+        okText={messageModalState.okText}
+        cancelText={messageModalState.cancelText}
+        okHandler={messageModalState.okHandler}
+        cancelHandler={messageModalState.cancelHandler}
+      />
+      <Table
+        columns={columns}
+        dataSource={getStaff}
+        scroll={{ x: 0, y: 450 }}
+      />
+    </>
   );
 };
 
 export default Table_template;
-// BC 674-14
