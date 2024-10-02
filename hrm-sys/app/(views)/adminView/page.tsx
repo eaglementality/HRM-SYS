@@ -18,6 +18,8 @@ export default function AdminView() {
     viewStaff:false,
     editStaff:false,
   })
+  const [getLength, setGetLength] = useState<number>(0);
+  const [refreshDataGrid, setRefreshDataGrid] = useState(false)
   return (
     <>
       <GenericMessageModal />
@@ -26,7 +28,7 @@ export default function AdminView() {
         open={openAddStaffForm}
         footer={null}
         closable={true}
-        onClose={() => {
+        onCancel={() => {
           setOpenAddStaffForm(false);
         }}
         maskClosable={true}
@@ -37,6 +39,9 @@ export default function AdminView() {
           setOpenAddStaffForm={setOpenAddStaffForm}
           switchContent={switchContent}
           selectedRecord={selectedRecord}
+          getLength={getLength}
+          refreshDataGrid={refreshDataGrid}
+          setRefreshDataGrid={setRefreshDataGrid}
         />
       </Modal>
       <main className="flex flex-col justify-center p-8">
@@ -78,6 +83,9 @@ export default function AdminView() {
             setSwitchContent={setSwitchContent}
             selectedRecord={selectedRecord}
             setSelectedRecord={setSelectedRecord}
+            setGetLength={setGetLength}
+            refreshDataGrid={refreshDataGrid}
+            setRefreshDataGrid={setRefreshDataGrid}
           />
         </section>
       </main>

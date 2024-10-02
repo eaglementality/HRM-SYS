@@ -14,6 +14,9 @@ interface Props {
   switchContent?: { viewStaff: boolean; editStaff: boolean };
   openAddStaffForm: boolean;
   setOpenAddStaffForm: (e: boolean) => void;
+  setGetLength?:(e:number)=>void;
+  refreshDataGrid?:boolean;
+  setRefreshDataGrid?:(e:boolean) => void;
 }
 interface DataType {
   key: string;
@@ -34,74 +37,7 @@ interface messageModalType {
 }
 type DataIndex = keyof DataType;
 
-const data: DataType[] = [
-  {
-    key: "1",
-    Name: "John Brown",
-    tag: "Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-  {
-    key: "2",
-    Name: "Joe Black",
-    tag: "Non-Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-  {
-    key: "3",
-    Name: "Jim Green",
-    tag: "Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-  {
-    key: "4",
-    Name: "Jim Red",
-    tag: "Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-  {
-    key: "5",
-    Name: "Jim Red",
-    tag: "Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-  {
-    key: "6",
-    Name: "Jim Red",
-    tag: "Non-Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-  {
-    key: "7",
-    Name: "Jim Red",
-    tag: "Non-Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-  {
-    key: "8",
-    Name: "Jim Red",
-    tag: "Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-  {
-    key: "9",
-    Name: "Jim Red",
-    tag: "Non-Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-  {
-    key: "10",
-    Name: "Jim Red",
-    tag: "Non-Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-  {
-    key: "11",
-    Name: "Jim Red",
-    tag: "Non-Teaching Staff",
-    actions: ["Delete", "Edit", "View"],
-  },
-];
+
 
 const Table_template = ({
   selectedRecord,
@@ -110,6 +46,9 @@ const Table_template = ({
   switchContent,
   openAddStaffForm,
   setOpenAddStaffForm,
+  setGetLength,
+  refreshDataGrid,
+  setRefreshDataGrid,
 }: Props) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -351,16 +290,21 @@ const Table_template = ({
     },
   ];
   const [getStaff, setGetStaff] = useState<any>();
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     async function GetStaffData() {
-      const res = await fetch("/api/getStaff");
+      setLoading(true)
+      const res = await fetch("/api/application");
       const data = res?.json();
       data.then((data) => {
         setGetStaff(data);
+        setGetLength&&setGetLength(data.length);
+        setLoading(false)
       });
+
     }
     GetStaffData();
-  }, []);
+  }, [refreshDataGrid]);
 
   return (
     <>
@@ -379,6 +323,7 @@ const Table_template = ({
         columns={columns}
         dataSource={getStaff}
         scroll={{ x: 0, y: 450 }}
+        loading={loading}
       />
     </>
   );
