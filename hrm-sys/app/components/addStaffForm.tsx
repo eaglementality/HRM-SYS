@@ -56,7 +56,7 @@ export const AddStaffForm = ({
       open: true,
       disableCancel: false,
       okHandler: async () => {
-        await fetch("/api/application", {
+        await fetch("/api/users/add", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

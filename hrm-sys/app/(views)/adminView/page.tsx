@@ -3,7 +3,7 @@ import { AddStaffForm } from "@/app/components/addStaffForm";
 import { GenericMessageModal } from "@/app/components/GenericMessageModal";
 import Table_template from "@/app/components/table";
 import { Button, Modal, Select } from "antd";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 
 export default function AdminView() {
   const [openAddStaffForm, setOpenAddStaffForm] = useState<boolean>(false);
@@ -19,7 +19,12 @@ export default function AdminView() {
     editStaff:false,
   })
   const [getLength, setGetLength] = useState<number>(0);
-  const [refreshDataGrid, setRefreshDataGrid] = useState(false)
+  const [refreshDataGrid, setRefreshDataGrid] = useState(false);
+  const [option, setOption] = useState<string>();
+  const [dynamicContentLoading,setdynamicContentLoading] = useState(false);
+  
+  
+
   return (
     <>
       <GenericMessageModal />
@@ -62,9 +67,14 @@ export default function AdminView() {
               className="h-[50px] w-52"
               placeholder="select employee type"
               options={[
-                { value: "teaching staff", label: "teaching staff" },
-                { value: "Non-teaching staff", label: "Non-teaching staff" },
+                { value: "All Staff", label: "All Staff" },
+                { value: "Teaching Staff", label: "Teaching Staff" },
+                { value: "Non Teaching Staff", label: "Non Teaching Staff" },
               ]}
+              onSelect={(e:any)=>{
+                setOption(e);
+                setdynamicContentLoading(!dynamicContentLoading)
+              }}
             />
             <Button
               onClick={() => {
@@ -86,9 +96,14 @@ export default function AdminView() {
             setGetLength={setGetLength}
             refreshDataGrid={refreshDataGrid}
             setRefreshDataGrid={setRefreshDataGrid}
+            option={option}
+            dynamicContentLoading={dynamicContentLoading}
+            setDynamicContentLoading={setdynamicContentLoading}
           />
         </section>
       </main>
     </>
   );
 }
+
+

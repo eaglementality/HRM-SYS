@@ -14,14 +14,17 @@ interface Props {
   switchContent?: { viewStaff: boolean; editStaff: boolean };
   openAddStaffForm: boolean;
   setOpenAddStaffForm: (e: boolean) => void;
-  setGetLength?:(e:number)=>void;
-  refreshDataGrid?:boolean;
-  setRefreshDataGrid?:(e:boolean) => void;
+  setGetLength?: (e: number) => void;
+  refreshDataGrid?: boolean;
+  setRefreshDataGrid?: (e: boolean) => void;
+  option?: string;
+  dynamicContentLoading?: boolean;
+  setDynamicContentLoading?: (e: boolean) => void;
 }
 interface DataType {
-  key: string;
+  id: number;
   Name: string;
-  tag: string;
+  tag: 'Teaching Staff'|'Non Teaching Staff';
   actions: string[];
 }
 interface messageModalType {
@@ -37,8 +40,6 @@ interface messageModalType {
 }
 type DataIndex = keyof DataType;
 
-
-
 const Table_template = ({
   selectedRecord,
   setSelectedRecord,
@@ -49,6 +50,9 @@ const Table_template = ({
   setGetLength,
   refreshDataGrid,
   setRefreshDataGrid,
+  option,
+  dynamicContentLoading,
+  setDynamicContentLoading,
 }: Props) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -79,7 +83,7 @@ const Table_template = ({
     setSearchText("");
   };
 
-  const handleDelete = () => {
+  const handleDelete = (id: number) => {
     setMessageModalState((prev) => ({
       ...prev,
       icon: "Confirm",
@@ -89,20 +93,42 @@ const Table_template = ({
       cancelText: "No",
       open: true,
       disableCancel: false,
-      okHandler: () => {
-        setMessageModalState((prev) => ({ ...prev, open: false }));
-        setMessageModalState((prev) => ({
-          ...prev,
-          icon: "Success",
-          title: "Success",
-          message: "Record deleted successfully",
-          okText: "Ok",
-          open: true,
-          disableCancel: true,
-          okHandler: () => {
-            setMessageModalState((prev) => ({ ...prev, open: false }));
+      okHandler: async () => {
+        await fetch(`/api/users/delete/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
           },
-        }));
+        }).then(() => {
+          setMessageModalState((prev) => ({ ...prev, open: false }));
+          setRefreshDataGrid&&setRefreshDataGrid(!refreshDataGrid)
+          setMessageModalState((prev) => ({
+            ...prev,
+            icon: "Success",
+            title: "Success",
+            message: "Record deleted successfully",
+            okText: "Ok",
+            open: true,
+            disableCancel: true,
+            okHandler: () => {
+              setMessageModalState((prev) => ({ ...prev, open: false }));
+            },
+          }));
+        }).catch(()=>{
+          setMessageModalState((prev) => ({ ...prev, open: false }));
+          setMessageModalState((prev) => ({
+            ...prev,
+            icon: "Warning",
+            title: "Warning",
+            message: "Record not deleted",
+            okText: "Ok",
+            open: true,
+            disableCancel: true,
+            okHandler: () => {
+              setMessageModalState((prev) => ({ ...prev, open: false }));
+            },
+          }));
+        })
       },
       cancelHandler: () => {
         setMessageModalState((prev) => ({ ...prev, open: false }));
@@ -257,12 +283,12 @@ const Table_template = ({
       title: "Actions",
       key: "actions",
       dataIndex: "actions",
-      render: (_, { actions, tag, Name }) => (
+      render: (_, { actions, tag, Name, id }) => (
         <>
           <div className="text-md space-x-8">
             <span
               onClick={() => {
-                handleDelete();
+                handleDelete(id);
               }}
               className="cursor-pointer font-bold text-red-600"
             >
@@ -289,25 +315,40 @@ const Table_template = ({
       ),
     },
   ];
-  const [getStaff, setGetStaff] = useState<any>();
-  const [loading, setLoading] = useState(false)
+  const [getStaff, setGetStaff] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [dynamicContent, setDynamicContent] = useState([]);
+  console.log("asd", dynamicContent);
+  useEffect(() => {
+    async function GetSpecificData() {
+      const res = await fetch(`/api/users/${option}`);
+      const data = res?.json();
+      data.then((data) => {
+        setDynamicContent(data);
+      });
+    }
+    GetSpecificData();
+  }, [dynamicContentLoading]);
+
   useEffect(() => {
     async function GetStaffData() {
-      setLoading(true)
-      const res = await fetch("/api/application");
+      setLoading(true);
+      const res = await fetch("/api/users");
       const data = res?.json();
       data.then((data) => {
         setGetStaff(data);
-        setGetLength&&setGetLength(data.length);
-        setLoading(false)
+        setGetLength && setGetLength(data.length);
+        setLoading(false);
       });
-
     }
     GetStaffData();
   }, [refreshDataGrid]);
-
-  return (
-    <>
+  let Data =
+    option == "Teaching Staff" || option == "Non Teaching Staff"
+    ? dynamicContent
+    : getStaff;
+    return (
+      <>
       <GenericMessageModal
         icon={messageModalState.icon}
         title={messageModalState.title}
@@ -321,7 +362,8 @@ const Table_template = ({
       />
       <Table
         columns={columns}
-        dataSource={getStaff}
+        // dataSource={option == 'Teaching Staff' || option == 'Non Teaching Staff' ? getStaff : dynamicContent}
+        dataSource={Data}
         scroll={{ x: 0, y: 450 }}
         loading={loading}
       />
