@@ -18,12 +18,9 @@ export default function AdminView() {
     viewStaff:false,
     editStaff:false,
   })
-  const [getLength, setGetLength] = useState<number>(0);
+  const [getLength, setGetLength] = useState<number>();
   const [refreshDataGrid, setRefreshDataGrid] = useState(false);
   const [option, setOption] = useState<string>();
-  const [dynamicContentLoading,setdynamicContentLoading] = useState(false);
-  
-  
 
   return (
     <>
@@ -73,7 +70,7 @@ export default function AdminView() {
               ]}
               onSelect={(e:any)=>{
                 setOption(e);
-                setdynamicContentLoading(!dynamicContentLoading)
+                setRefreshDataGrid(!refreshDataGrid)
               }}
             />
             <Button
@@ -97,8 +94,6 @@ export default function AdminView() {
             refreshDataGrid={refreshDataGrid}
             setRefreshDataGrid={setRefreshDataGrid}
             option={option}
-            dynamicContentLoading={dynamicContentLoading}
-            setDynamicContentLoading={setdynamicContentLoading}
           />
         </section>
       </main>

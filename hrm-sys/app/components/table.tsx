@@ -321,32 +321,35 @@ const Table_template = ({
   console.log("asd", dynamicContent);
   useEffect(() => {
     async function GetSpecificData() {
+      setLoading(true);
       const res = await fetch(`/api/users/${option}`);
       const data = res?.json();
       data.then((data) => {
         setDynamicContent(data);
-      });
-    }
-    GetSpecificData();
-  }, [dynamicContentLoading]);
-
-  useEffect(() => {
-    async function GetStaffData() {
-      setLoading(true);
-      const res = await fetch("/api/users");
-      const data = res?.json();
-      data.then((data) => {
-        setGetStaff(data);
         setGetLength && setGetLength(data.length);
         setLoading(false);
       });
     }
-    GetStaffData();
+    GetSpecificData();
   }, [refreshDataGrid]);
-  let Data =
-    option == "Teaching Staff" || option == "Non Teaching Staff"
-    ? dynamicContent
-    : getStaff;
+
+  // useEffect(() => {
+  //   async function GetStaffData() {
+  //     setLoading(true);
+  //     const res = await fetch("/api/users");
+  //     const data = res?.json();
+  //     data.then((data) => {
+  //       setGetStaff(data);
+  //       setGetLength && setGetLength(data.length);
+  //       setLoading(false);
+  //     });
+  //   }
+  //   GetStaffData();
+  // }, [refreshDataGrid]);
+  // let Data =
+  //   option == "Teaching Staff" || option == "Non Teaching Staff"
+  //   ? dynamicContent
+  //   : getStaff;
     return (
       <>
       <GenericMessageModal
@@ -362,8 +365,7 @@ const Table_template = ({
       />
       <Table
         columns={columns}
-        // dataSource={option == 'Teaching Staff' || option == 'Non Teaching Staff' ? getStaff : dynamicContent}
-        dataSource={Data}
+        dataSource={dynamicContent}
         scroll={{ x: 0, y: 450 }}
         loading={loading}
       />

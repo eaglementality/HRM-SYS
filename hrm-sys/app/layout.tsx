@@ -5,6 +5,7 @@ import Image from "next/image";
 import schoolLogo from "../app/img/AbS-removebg-preview.png";
 import { Dash_Navigation } from "./components/Dash_navigation";
 import { Header } from "./components/header";
+// import { AntdRegistry } from '@ant-design/nextjs-registry';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
