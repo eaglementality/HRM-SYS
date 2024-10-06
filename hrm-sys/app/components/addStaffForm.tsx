@@ -3,11 +3,12 @@ import { Button, Form, Input, Select } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useState } from "react";
 import { GenericMessageModal } from "./GenericMessageModal";
+import React from "react";
 interface props {
   openAddStaffForm: boolean;
   setOpenAddStaffForm: (e: boolean) => void;
   switchContent?: { viewStaff: boolean; editStaff: boolean };
-  selectedRecord?: { name: string; tag: string };
+  selectedRecord?: { id: any; name: string; tag: string };
   getLength?: number;
   refreshDataGrid?: boolean;
   setRefreshDataGrid?: (e: boolean) => void;
@@ -44,26 +45,43 @@ export const AddStaffForm = ({
     disableCancel: false,
   });
   const [form] = Form.useForm();
+
+  let formState = {
+    name: selectedRecord?.name ?? "",
+    tag: selectedRecord?.tag ?? "All Staff",
+  };
+
   const handleOnFinish = async (value: any) => {
-    console.log("hhh", value);
     setMessageModalState((prev) => ({
       ...prev,
       icon: "Confirm",
       title: "Confirm",
-      message: "Are you sure you want to add this record ?",
-      okText: "Yes add",
+      message: `Are you sure you want to ${
+        switchContent?.editStaff == true ? "edit" : "add"
+      } this record ?`,
+      okText: `Yes ${switchContent?.editStaff === true ? "edit" : "add"}`,
       cancelText: "No",
       open: true,
       disableCancel: false,
       okHandler: async () => {
-        await fetch("/api/users/add", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ...value, id: getLength }),
-        })
-          .then((response: any) => {
+        try {
+          let res =
+            switchContent?.editStaff === true
+              ? await fetch(`/api/users/update/${selectedRecord?.id}`, {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ ...value }),
+                })
+              : await fetch("/api/users/add", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ ...value, id: getLength }),
+                });
+          if (res.ok) {
             setRefreshDataGrid && setRefreshDataGrid(!refreshDataGrid);
             setOpenAddStaffForm(!openAddStaffForm);
             setMessageModalState((prev) => ({ ...prev, open: false }));
@@ -71,7 +89,9 @@ export const AddStaffForm = ({
               ...prev,
               icon: "Success",
               title: "Success",
-              message: "Record added successfully",
+              message: `Record ${
+                switchContent?.editStaff === true ? "edited" : "added"
+              } successfully`,
               okText: "Ok",
               open: true,
               disableCancel: true,
@@ -79,23 +99,25 @@ export const AddStaffForm = ({
                 setMessageModalState((prev) => ({ ...prev, open: false }));
               },
             }));
-          })
-          .catch(() => {
-            setOpenAddStaffForm(!openAddStaffForm);
-            setMessageModalState((prev) => ({ ...prev, open: false }));
-            setMessageModalState((prev) => ({
-              ...prev,
-              icon: "Warning",
-              title: "Warning",
-              message: "Record not added",
-              okText: "Ok",
-              open: true,
-              disableCancel: true,
-              okHandler: () => {
-                setMessageModalState((prev) => ({ ...prev, open: false }));
-              },
-            }));
-          });
+          }
+        } catch (err) {
+          setOpenAddStaffForm(!openAddStaffForm);
+          setMessageModalState((prev) => ({ ...prev, open: false }));
+          setMessageModalState((prev) => ({
+            ...prev,
+            icon: "Warning",
+            title: "Warning",
+            message: `Record not ${
+              switchContent?.editStaff === true ? "edited" : "added"
+            }`,
+            okText: "Ok",
+            open: true,
+            disableCancel: true,
+            okHandler: () => {
+              setMessageModalState((prev) => ({ ...prev, open: false }));
+            },
+          }));
+        }
       },
       cancelHandler: () => {
         setMessageModalState((prev) => ({ ...prev, open: false }));
@@ -122,12 +144,17 @@ export const AddStaffForm = ({
           form={form}
           onFinish={handleOnFinish}
         >
-          <Form.Item name={"Name"} label={<p>Full Name</p>}>
-            <Input value={selectedRecord?.name} className="h-[45px]" />
+          <Form.Item initialValue={selectedRecord?.name} name={"Name"} label={<p>Full Name</p>}>
+            <Input
+              defaultValue={formState.name}
+              // value={selectedRecord?.name}
+              className="h-[45px]"
+            />
           </Form.Item>
-          <Form.Item name={"tag"} label={<p>Category</p>}>
+          <Form.Item initialValue={selectedRecord?.tag} name={"tag"} label={<p>Category</p>}>
             <Select
-              value={selectedRecord?.tag}
+              defaultValue={formState.tag}
+              // value={selectedRecord?.tag}
               className="h-[45px] w-52"
               placeholder="select employee type"
               options={[
@@ -139,9 +166,6 @@ export const AddStaffForm = ({
           <div className="flex flex-col mt-16">
             <Button
               htmlType="submit"
-              // onClick={() => {
-              //   setOpenAddStaffForm(!openAddStaffForm);
-              // }}
               className="absolute right-[8%] h-10  w-28 bottom-4 font-medium bg-black text-white"
             >
               {switchContent?.editStaff === true ? "Edit" : "Add"}

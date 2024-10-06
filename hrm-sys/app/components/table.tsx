@@ -135,10 +135,11 @@ const Table_template = ({
       },
     }));
   };
-  const handleEdit = (tag: string, name: string) => {
+  const handleEdit = (tag: string, name: string, id:any) => {
     setSelectedRecord &&
       setSelectedRecord((prev: typeof selectedRecord) => ({
         ...prev,
+        id:id,
         name: name,
         tag: tag,
       }));
@@ -150,7 +151,7 @@ const Table_template = ({
         viewStaff: false,
       }));
   };
-  const handleView = (tag: string, name: string) => {
+  const handleView = (tag: string, name: string,id:any) => {
     setOpenAddStaffForm(!openAddStaffForm);
     setSelectedRecord &&
       setSelectedRecord((prev: typeof selectedRecord) => ({
@@ -296,7 +297,7 @@ const Table_template = ({
             </span>
             <span
               onClick={() => {
-                handleEdit(tag, Name);
+                handleEdit(tag, Name,id);
               }}
               className="cursor-pointer font-bold text-blue-600"
             >
@@ -304,7 +305,7 @@ const Table_template = ({
             </span>
             <span
               onClick={() => {
-                handleView(tag, Name);
+                handleView(tag, Name, id);
               }}
               className="cursor-pointer font-bold text-green-600"
             >
@@ -318,7 +319,7 @@ const Table_template = ({
   const [getStaff, setGetStaff] = useState([]);
   const [loading, setLoading] = useState(false);
   const [dynamicContent, setDynamicContent] = useState([]);
-  console.log("asd", dynamicContent);
+
   useEffect(() => {
     async function GetSpecificData() {
       setLoading(true);

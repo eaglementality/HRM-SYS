@@ -3,14 +3,17 @@ import { AddStaffForm } from "@/app/components/addStaffForm";
 import { GenericMessageModal } from "@/app/components/GenericMessageModal";
 import Table_template from "@/app/components/table";
 import { Button, Modal, Select } from "antd";
+import React from "react";
 import { use, useEffect, useState } from "react";
 
 export default function AdminView() {
   const [openAddStaffForm, setOpenAddStaffForm] = useState<boolean>(false);
   const [selectedRecord, setSelectedRecord] = useState<{
+    id:any,
     name: string;
     tag: string;
   }>({
+    id: '',
     name: "",
     tag: "",
   });
