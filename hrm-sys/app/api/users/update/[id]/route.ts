@@ -11,7 +11,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string}}) 
         },
         data: {
             Name: data.Name,
-            tag: data.Tag,
+            tag: data.tag,
         }
     })
     return Response.json(update_data,{status:200});
