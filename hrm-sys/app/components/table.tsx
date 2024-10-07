@@ -318,35 +318,35 @@ const Table_template = ({
   ];
   const [getStaff, setGetStaff] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [dynamicContent, setDynamicContent] = useState([]);
-
-  useEffect(() => {
-    async function GetSpecificData() {
-      setLoading(true);
-      const res = await fetch(`/api/users/${option}`);
-      const data = res?.json();
-      data.then((data) => {
-        setDynamicContent(data);
-        setGetLength && setGetLength(data.length);
-        setLoading(false);
-      });
-    }
-    GetSpecificData();
-  }, [refreshDataGrid]);
+  const [dynamicContent, setDynamicContent] = useState<any>([]);
 
   // useEffect(() => {
-  //   async function GetStaffData() {
+  //   async function GetSpecificData() {
   //     setLoading(true);
-  //     const res = await fetch("/api/users");
+  //     const res = await fetch(`/api/users/${option}`);
   //     const data = res?.json();
   //     data.then((data) => {
-  //       setGetStaff(data);
+  //       setDynamicContent(data);
   //       setGetLength && setGetLength(data.length);
   //       setLoading(false);
   //     });
   //   }
-  //   GetStaffData();
+  //   GetSpecificData();
   // }, [refreshDataGrid]);
+
+  useEffect(() => {
+    async function GetStaffData() {
+      setLoading(true);
+      const res = await fetch("/api/users");
+      const data = res?.json();
+      data.then((data) => {
+        setGetStaff(data);
+        setGetLength && setGetLength(data.length);
+        setLoading(false);
+      });
+    }
+    GetStaffData();
+  }, [refreshDataGrid]);
   // let Data =
   //   option == "Teaching Staff" || option == "Non Teaching Staff"
   //   ? dynamicContent
@@ -366,7 +366,8 @@ const Table_template = ({
       />
       <Table
         columns={columns}
-        dataSource={dynamicContent}
+        // dataSource={dynamicContent}
+        dataSource={getStaff}
         scroll={{ x: 0, y: 450 }}
         loading={loading}
       />

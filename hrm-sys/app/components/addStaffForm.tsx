@@ -79,7 +79,7 @@ export const AddStaffForm = ({
                   headers: {
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify({ ...value, id: getLength }),
+                  body: JSON.stringify({ ...value, id: Number(getLength!+1) }),
                 });
           if (res.ok) {
             setRefreshDataGrid && setRefreshDataGrid(!refreshDataGrid);
@@ -144,16 +144,16 @@ export const AddStaffForm = ({
           form={form}
           onFinish={handleOnFinish}
         >
-          <Form.Item initialValue={selectedRecord?.name} name={"Name"} label={<p>Full Name</p>}>
+          <Form.Item initialValue={switchContent?.editStaff === true ? selectedRecord?.name:''} name={"Name"} label={<p>Full Name</p>}>
             <Input
-              defaultValue={formState.name}
+              // defaultValue={formState.name}
               // value={selectedRecord?.name}
               className="h-[45px]"
             />
           </Form.Item>
-          <Form.Item initialValue={selectedRecord?.tag} name={"tag"} label={<p>Category</p>}>
+          <Form.Item initialValue={switchContent?.editStaff === true ? selectedRecord?.tag : ''} name={"tag"} label={<p>Category</p>}>
             <Select
-              defaultValue={formState.tag}
+              // defaultValue={formState.tag}
               // value={selectedRecord?.tag}
               className="h-[45px] w-52"
               placeholder="select employee type"
